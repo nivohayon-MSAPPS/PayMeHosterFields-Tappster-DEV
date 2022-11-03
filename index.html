@@ -162,7 +162,7 @@
           <label for="phone-container" class="control-label"
             >Phone Number (Optional)</label
           >
-          <input onblur="onBlur()" maxlength="20" tabindex="0" type="tel" ng-model="$ctrl.numberField" placeholder="Phone Number" id="phone-input" class="large-input"></input>
+          <input maxlength="20" tabindex="0" type="number" placeholder="Phone Number" id="phone-input" class="large-input"></input>
           <!-- <div
             id="phone-container"
             class="form-control input-lg"></div>
@@ -171,6 +171,8 @@
             class="help-block"
             style="display: none"></p> -->
         </div>
+
+        <p id="test"></p>
       
 
     
@@ -203,12 +205,7 @@
    
     <script>
 
-    const onBlur=()=>{
-      window.ReactNativeWebView.postMessage(JSON.stringify({
-        type:"iPhoneSubmit"
-      }));
-    }
-
+document.getElementById('test').innerText = window.test
       // HELPERS ---------------------------------------------------------------------------------
 
       const apiKey = '01885ed5-35ee-4c75-bcca-3685928fbd34';
@@ -311,8 +308,6 @@
    
 
       const allFieldsReady = [];
-      
-      console.log({myLog: window.test})
 
       PayMe.create(apiKey, {
         testMode: false,
@@ -433,7 +428,7 @@
             total: {
               label: cardType,
               amount: {
-                currency: 'RON',
+                currency: 'ILS',
                 value: '0',
               },
             },
