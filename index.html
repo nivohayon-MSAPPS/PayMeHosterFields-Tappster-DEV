@@ -171,13 +171,6 @@
             class="help-block"
             style="display: none"></p> -->
         </div>
-
-        <p id="apiKey"></p>
-      
-
-    
-
-
         <div style="display: none" class="row">
           <div class="col-xs-12">
             <button
@@ -204,16 +197,9 @@
 
    
     <script>
-
-document.getElementById('apiKey').innerText = window.apiKey
-      // HELPERS ---------------------------------------------------------------------------------
-
-      // const apiKey = '01885ed5-35ee-4c75-bcca-3685928fbd34';
-
-   
+      // HELPERS ---------------------------------------------------------------------------------   
       const form = document.getElementById('checkout-form');
       const cardProvider = document.getElementById('card-provider');
-
       const numberGroup = document.getElementById('card-number-group');
       const numberMessages = document.getElementById('card-number-messages');
 
@@ -221,12 +207,9 @@ document.getElementById('apiKey').innerText = window.apiKey
       const expirationMessages = document.getElementById(
         'card-expiration-messages',
       );
-
       const expirationInput = document.getElementById('cvc-field')
-
       const cvcGroup = document.getElementById('card-cvv-group');
       const cvcMessages = document.getElementById('card-cvv-messages');
-
       const phoneGroup = document.getElementById('phone-group');
       const phoneMessages = document.getElementById('phone-messages');
       const phoneInput = document.getElementById('phone-input');
