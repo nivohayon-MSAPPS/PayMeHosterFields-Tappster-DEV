@@ -172,7 +172,7 @@
             style="display: none"></p> -->
         </div>
 
-        <p id="test"></p>
+        <p id="apiKey"></p>
       
 
     
@@ -205,10 +205,10 @@
    
     <script>
 
-document.getElementById('test').innerText = window.test
+document.getElementById('apiKey').innerText = window.apiKey
       // HELPERS ---------------------------------------------------------------------------------
 
-      const apiKey = '01885ed5-35ee-4c75-bcca-3685928fbd34';
+      // const apiKey = '01885ed5-35ee-4c75-bcca-3685928fbd34';
 
    
       const form = document.getElementById('checkout-form');
@@ -309,7 +309,7 @@ document.getElementById('test').innerText = window.test
 
       const allFieldsReady = [];
 
-      PayMe.create(apiKey, {
+      PayMe.create(window.apiKey, {
         testMode: false,
       }).then(instance => {
         const fields = instance.hostedFields();
