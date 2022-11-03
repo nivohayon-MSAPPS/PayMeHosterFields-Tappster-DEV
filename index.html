@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <title>Example Bootstrap implementation</title>
+
+    <link
+      href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      rel="stylesheet"
+      id="bootstrap-css" />
+    <link
+      rel="stylesheet"
+      href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+    <script src="https://cdn.paymeservice.com/hf/v1/hostedfields.js"></script>
+    <style>
+     .form-container {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+     }
+     .small-inputs__container {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+     }
+     .small-input {
+      width: 45%;
+     }
+     .large-input {
+      outline: none;
+      padding: 10px;
+      width: 100%;
+      border-radius: 6px;
+      border: 1px solid #ccc;;
+      
+     }
+
+     .label_container {
+      display: flex;
+     }
+
+     label {
+      font-weight: 400;
+      font-size: 11px;
+      margin-top: 0px;
+      color: rgba(34,29,31, 0.3);
+     }
+
+     .cvv__button-text {
+      font-weight: 400;
+      font-size: 11px;
+      margin-top: 0px;
+      color: rgba(34,29,31, 0.3);
+     }
+     .cvv__button {
+      background-color: transparent;
+      border-radius: 100%;
+      border: none;
+      cursor: pointer;
+      width: 17px;
+      height: 17px;
+      display: flex;
+      justify-content: center;
+      margin-left: auto;
+    }
+     .phone_input-container {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      justify-content: flex-start;
+     }
+     .payment-container {
+      margin: 0;
+      padding: 0;
+     }
+
+     .input_container {
+      margin-bottom: 4px;
+     }
+
+     .error_container {
+      margin-bottom: 0;
+     }
+     
+     ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: #ccc;
+  opacity: 1; /* Firefox */
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: #ccc;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+  color: #ccc;
+}
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <form class="form-container" role="form" id="checkout-form">
+        <div class="form-group input_container" id="card-number-group">
+          <label for="card-number-container" class="control-label"
+            >Card Number</label
+          >
+          <div class="input-group input-group-lg">
+            <div
+              id="card-number-container"
+              class="form-control input-lg large-input"></div>
+            <span class="input-group-addon"
+              ><i class="fa fa-credit-card" id="card-provider"></i
+            ></span>
+          </div>
+          <p
+            id="card-number-messages"
+            class="help-block error_container"
+            style="display: block"></p>
+        </div>
+        <div class="small-inputs__container">
+          <div class="form-group input_row small-input input_container" autofocus  id="card-expiration-group">
+            <div class="label_container">
+              <label
+                for="card-expiration-container"
+                class="control-label"
+                >Expiration Date</label
+              >
+            </div>
+            <div
+              id="card-expiration-container"
+              class="form-control input-lg"></div>
+            <p
+              id="card-expiration-messages"
+              class="help-block error_container"
+              style="display: none"></p>
+          </div>
+          <div class="form-group small-input input_container" id="card-cvv-group">
+            <div class="label_container">
+              <label for="card-cvv-container" class="control-label"
+              >CVV</label
+            >
+            
+            <button type="button" class="cvv__button" id="cvv-button"><img src="questionMarkLogo.svg" alt="question mark logo"/></button>
+            </div>
+            <div
+              id="card-cvv-container"
+              class="form-control input-lg"></div>
+            <p
+              id="card-cvv-messages"
+              class="help-block error_container"
+              style="display: none"></p>
+          </div>
+        </div>
+            
+        <div class="phone_input-container" id="phone-group">
+          <label for="phone-container" class="control-label"
+            >Phone Number (Optional)</label
+          >
+          <input onblur="onBlur()" maxlength="20" tabindex="0" type="tel" ng-model="$ctrl.numberField" placeholder="Phone Number" id="phone-input" class="large-input"></input>
+          <!-- <div
+            id="phone-container"
+            class="form-control input-lg"></div>
+          <p
+            id="phone-messages"
+            class="help-block"
+            style="display: none"></p> -->
+        </div>
+      
+
+    
+
+
+        <div style="display: none" class="row">
+          <div class="col-xs-12">
+            <button
+              class="subscribe btn btn-success btn-lg btn-block"
+              id="submit-button"
+              disabled
+              style="display: none">
+              Pay 55.00 ILS
+            </button>
+          </div>
+        </div>
+
+        <div
+          class="row"
+          style="display: none"
+          id="checkout-form-errors">
+          <div class="col-xs-12">
+            <p class="payment-errors"></p>
+          </div>
+        </div>
+      </form>
+    </div>
+
+
+   
+    <script>
+
+    const onBlur=()=>{
+      window.ReactNativeWebView.postMessage(JSON.stringify({
+        type:"iPhoneSubmit"
+      }));
+    }
+
+      // HELPERS ---------------------------------------------------------------------------------
+
+      const apiKey = '01885ed5-35ee-4c75-bcca-3685928fbd34';
+
+   
+      const form = document.getElementById('checkout-form');
+      const cardProvider = document.getElementById('card-provider');
+
+      const numberGroup = document.getElementById('card-number-group');
+      const numberMessages = document.getElementById('card-number-messages');
+
+      const expirationGroup = document.getElementById('card-expiration-group');
+      const expirationMessages = document.getElementById(
+        'card-expiration-messages',
+      );
+
+      const expirationInput = document.getElementById('cvc-field')
+
+      const cvcGroup = document.getElementById('card-cvv-group');
+      const cvcMessages = document.getElementById('card-cvv-messages');
+
+      const phoneGroup = document.getElementById('phone-group');
+      const phoneMessages = document.getElementById('phone-messages');
+      const phoneInput = document.getElementById('phone-input');
+
+      window.addEventListener('message',(e)=>{
+        if(e.data === "removeFocus"){
+          
+          console.log("remove");
+        document.activeElement.blur()
+        }  
+      })
+
+      window.addEventListener('submit', () => {
+        window.ReactNativeWebView.postMessage(JSON.stringify({type: 'submit'}));
+      })
+
+      let cardType
+      // -----------------------------------------------------------------------------------------------------------------
+
+      const cvvButton = document.getElementById('cvv-button');
+      cvvButton.addEventListener('click', () => {
+        window.ReactNativeWebView.postMessage(JSON.stringify({type: 'cvvButtonClicked'}));
+      })
+      const submitButton = document.getElementById('submit-button');
+      submitButton.disabled = true;
+
+      function tokenizationStarted() {
+        submitButton.disabled = true;
+        console.log('Tokenization started!');
+      }
+
+      function tokenizationFinished() {
+        submitButton.disabled = false;
+        console.log('Tokenization finished!');
+      }
+
+      function toggleValidationMessages(wrapper, ev) {
+        if (ev.isValid) {
+          this.style.display = 'none';
+          wrapper.classList.remove('has-error');
+        } else {
+          this.innerText = ev.message;
+          this.style.display = 'block';
+          wrapper.classList.add('has-error');
+        }
+      }
+
+      function changeCardProviderIcon(cardVendor) {
+        const vendorsToClasses = {
+          unknown: ['fa', 'fa-credit-card'],
+
+          amex: ['fa', 'fa-cc-amex'],
+          diners: ['fa', 'fa-cc-diners-club'],
+          jcb: ['fa', 'fa-cc-jcb'],
+          visa: ['fa', 'fa-cc-visa'],
+          mastercard: ['fa', 'fa-cc-mastercard'],
+          discover: ['fa', 'fa-cc-discover'],
+        };
+
+        cardProvider.classList.remove(...cardProvider.classList);
+        cardProvider.classList.add(
+          ...(vendorsToClasses[cardVendor]
+            ? vendorsToClasses[cardVendor]
+            : vendorsToClasses['unknown']),
+        );
+      }
+
+      phoneInput.addEventListener('keypress', (e) => {
+        if(e.target.value.length == 20 || e.keyCode == 69 || e.keyCode == 101) {
+          e.preventDefault();
+        }
+      })
+
+
+
+
+      // -----------------------------------------------------------------------------------------------------------------
+
+   
+
+      const allFieldsReady = [];
+      
+      console.log({myLog: window.test})
+
+      PayMe.create(apiKey, {
+        testMode: false,
+      }).then(instance => {
+        const fields = instance.hostedFields();
+
+        const cardNumberSettings = {
+          placeholder: 'Credit Card Number',
+          messages: {invalid: 'Bad credit card number'},
+          styles: {
+            base: {
+      
+              '::placeholder': {
+                color: 'rgb(204, 204, 204)',
+              },
+            },
+            invalid: {
+              color: '#FE1E00',
+            },
+            valid: {
+              color: 'green',
+            },
+          },
+        };
+
+        const placeHolderSettings = {
+          styles: {
+            base: {
+      
+              '::placeholder': {
+                color: 'rgb(204, 204, 204)',
+              },
+            },
+          }
+        }
+        const cardNumber = fields.create(
+          PayMe.fields.NUMBER,
+          cardNumberSettings,
+        );
+        allFieldsReady.push(cardNumber.mount('#card-number-container'));
+        cardNumber.on('card-type-changed', ev => {
+          changeCardProviderIcon(ev.cardType);
+          cardType = ev.cardType
+        }
+        
+        );
+        cardNumber.on(
+          'keyup',
+            toggleValidationMessages.bind(numberMessages, numberGroup)
+        );  
+        cardNumber.on(
+          'keyup',
+            toggleValidationMessages.bind(numberMessages, numberGroup)
+        );  
+        cardNumber.on(
+          'validity-changed',
+          toggleValidationMessages.bind(numberMessages, numberGroup),
+        );
+        cardNumber.on('validity-changed', function (event) {
+          window.ReactNativeWebView.postMessage(JSON.stringify(event));
+        });
+    
+
+
+
+
+
+        const expiration = fields.create(PayMe.fields.EXPIRATION, placeHolderSettings);
+        allFieldsReady.push(expiration.mount('#card-expiration-container'));
+        expiration.on(
+          'keyup',
+          toggleValidationMessages.bind(expirationMessages, expirationGroup),
+        );
+        expiration.on(
+          'validity-changed',
+          toggleValidationMessages.bind(expirationMessages, expirationGroup),
+        );
+        expiration.on('validity-changed', function (event) {
+          window.ReactNativeWebView.postMessage(JSON.stringify(event));
+        });
+
+        const cvc = fields.create(PayMe.fields.CVC, placeHolderSettings);
+        allFieldsReady.push(cvc.mount('#card-cvv-container'));
+        cvc.on('keyup', toggleValidationMessages.bind(cvcMessages, cvcGroup));
+        cvc.on(
+          'validity-changed',
+          toggleValidationMessages.bind(cvcMessages, cvcGroup),
+        );
+        cvc.on('validity-changed', function (event) {
+          window.ReactNativeWebView.postMessage(JSON.stringify(event));
+        });
+
+        cvc.on('validity-changed', function (event) {
+          phoneInput.focus()
+        });
+    
+
+
+        Promise.all(allFieldsReady).then(() => {
+          submitButton.disabled = false;
+          window.ReactNativeWebView.postMessage(JSON.stringify({type: 'loadingComplete'}));
+          console.log('loading complete');
+        });
+
+        form.addEventListener('submit', ev => {
+          ev.preventDefault();
+          console.log('inside submit func');
+          window.ReactNativeWebView.postMessage(JSON.stringify('inside submit function'));
+          const sale = {
+            payerFirstName: 'asaff',
+            payerLastName: 'asff',
+            payerEmail: 'trahomoto@mailforspam.com',
+            payerPhone: '1231231',
+            payerZipCode: '123123123',
+
+            
+
+            total: {
+              label: cardType,
+              amount: {
+                currency: 'RON',
+                value: '0',
+              },
+            },
+          };
+
+          tokenizationStarted();
+
+          instance
+            .tokenize(sale)
+            .then(data => {
+              window.ReactNativeWebView.postMessage(JSON.stringify('inside tokenization'));
+              window.ReactNativeWebView.postMessage(JSON.stringify(data));
+              console.log('Tokenization result::: ', data);
+              console.log('inside tokenizatoin func');
+
+              tokenizationFinished();
+            })
+            .catch(err => {
+              console.error(err);
+              window.ReactNativeWebView.postMessage(
+                JSON.stringify(err),
+              );
+              tokenizationFinished();
+            });
+          window.ReactNativeWebView.postMessage(JSON.stringify('after tokenization'));
+        });
+        // document.getElementById('tear-down').addEventListener('click', () => instance.teardown());
+      });
+    </script>
+  </body>
+</html>
